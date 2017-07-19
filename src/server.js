@@ -1,27 +1,35 @@
-var express = require('express')
-var bodyParser = require('body-parser')
-var recastai = require('recastai').default
+const express = require('express')
+const bodyParser = require('body-parser')
 
+// Load configuration
+require('./config')
+const bot = require('./bot').bot
 
-var connect = new recastai.connect('b7fed20ffafd46d167ceaa8f5d204ba1')
-
-var app = express()
-
-/* Server setup */
-app.set('port', 5000)
+// Start Express server
+const app = express()
+app.set('port', process.env.PORT || 5000)
 app.use(bodyParser.json())
-app.post('/', function(req, res) {
-  connect.handleMessage(req, res, onMessage)
+
+// Handle / route
+app.use('/', (request, response) => {
+  // Call bot main function
+  bot(request.body, response, (error, success) => {
+    if (error) {
+      console.log('Error in your bot:', error)
+      if (!response.headersSent) { response.sendStatus(400) }
+    } else if (success) {
+      console.log(success)
+      if (!response.headerSent) { response.status(200).json(success) }
+    }
+  })
 })
 
-function onMessage (message) {
-  // Get the content of the message
-  var content = message.content
-
-  // Get the type of the message (text, picture,...)
-  var type = message.type
-
-  // Add a reply, and send it
-  message.addReply([{ type: 'text', content: 'Hello, world' }])
-  message.reply()
+if (!process.env.REQUEST_TOKEN.length) {
+  console.log('ERROR: process.env.REQUEST_TOKEN variable in src/config.js file is empty ! You must fill this field with the request_token of your bot before launching your bot locally')
+  process.exit(0)
+} else {
+  // Run Express server, on right port
+  app.listen(app.get('port'), () => {
+    console.log('Our bot is running on port', app.get('port'))
+  })
 }
