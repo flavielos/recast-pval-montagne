@@ -3,7 +3,7 @@ var bodyParser = require('body-parser')
 var recastai = require('recastai').default
 
 
-var connect = new recastai.connect('YOUR_REQUEST_TOKEN')
+var connect = new recastai.connect('b7fed20ffafd46d167ceaa8f5d204ba1')
 
 var app = express()
 
