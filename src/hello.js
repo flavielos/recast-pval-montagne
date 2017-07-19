@@ -22,6 +22,6 @@ function onMessage (message) {
   var type = message.type
 
   // Add a reply, and send it
-  message.addReply([{ type: 'text', content: 'Hello, world' }])
+  message.addReply([{ type: 'text', content: 'Hello, world !' }])
   message.reply()
 }
